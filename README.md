@@ -55,6 +55,23 @@ let rsaPublicKeyAsData: Data = rsaPublicKey.export()!
 let sameRsaPublicKeyFromData: RSAPublicKey = .load(rsaPublicKeyData: rsaPublicKeyAsData)!
 ```
 
+## Add as Swift Package
+
+```swift
+// swift-tools-version:5.5
+import PackageDescription
+
+let package = Package(
+    name: "Example",
+    dependencies: [
+        .package(name: "SimpleSwiftCrypto", url: "https://github.com/joehinkle11/SimpleSwiftCrypto.git", from: "1.0.0"),
+    ],
+    targets: [
+        "SimpleSwiftCrypto"
+    ]
+)
+```
+
 ## Why did I make this?
 
 I'm working on an IDE for iPad/iOS called [App Maker Professional](https://www.appmakerios.com). A new feature I'm adding is multiplayer, and I don't want to have my users' files on the server. So I made this to be able to encrypt their files locally on device so the server can't read them.
