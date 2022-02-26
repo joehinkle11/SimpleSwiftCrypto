@@ -26,6 +26,18 @@ final class SimpleSwiftCryptoTests: XCTestCase {
         XCTAssertNotEqual(encryptedData, decryptedData)
         XCTAssertEqual(testData, decryptedData)
     }
+    func testAESGenLargeRandomEncryptAndDecrypt() {
+        let testString: String = getRandomLongString()
+        let testData: Data = testString.data(using: .utf8)!
+        
+        let aesPrivateKey: AES256Key = SimpleSwiftCrypto.generateRandomAES256Key()!
+        let encryptedData: Data = aesPrivateKey.encrypt(data: testData)!
+        let decryptedData: Data = aesPrivateKey.decrypt(data: encryptedData)!
+        
+        XCTAssertNotEqual(testData, encryptedData)
+        XCTAssertNotEqual(encryptedData, decryptedData)
+        XCTAssertEqual(testData, decryptedData)
+    }
     func testAESGenEncryptWithDifferentKeysMakesDifferentMessage() {
         let testString: String = "Hello World!"
         let testData: Data = testString.data(using: .utf8)!
@@ -70,7 +82,7 @@ final class SimpleSwiftCryptoTests: XCTestCase {
         XCTAssertNotEqual(rsaPrivateKey1.__debug_publicKey, rsaPrivateKey1.__debug_privateKey)
         XCTAssertNotEqual(rsaPrivateKey2.__debug_publicKey, rsaPrivateKey2.__debug_privateKey)
     }
-    func testRSAGenGenEncryptAndDecrypt() {
+    func testRSAGenEncryptAndDecrypt() {
         let testString: String = "Hello World!"
         let testData: Data = testString.data(using: .utf8)!
         
@@ -82,7 +94,17 @@ final class SimpleSwiftCryptoTests: XCTestCase {
         XCTAssertNotEqual(encryptedData, decryptedData)
         XCTAssertEqual(testData, decryptedData)
     }
-    func testRSAGenGenEncryptAndDecryptWithDifferentKeysMakesDifferentMessage() {
+    func testRSAGenLargeEncryptAndDecrypt() {
+        let testString: String = getRandomLongString()
+        let testData: Data = testString.data(using: .utf8)!
+        
+        let rsaPrivateKey: RSAKeyPair = SimpleSwiftCrypto.generateRandomRSAKeyPair()!
+        if rsaPrivateKey.extractPublicKey().encrypt(data: testData) != nil {
+            // we should not be able to encrypt a message of this size with RSA
+            XCTFail()
+        }
+    }
+    func testRSAGenEncryptAndDecryptWithDifferentKeysMakesDifferentMessage() {
         let testString: String = "Hello World!"
         let testData: Data = testString.data(using: .utf8)!
         
@@ -120,4 +142,17 @@ final class SimpleSwiftCryptoTests: XCTestCase {
         let encryptedData2: Data = sameRsaPublicKeyFromData.encrypt(data: testData)!
         XCTAssertNotEqual(encryptedData1, encryptedData2)
     }
+}
+
+func getRandomLongString() -> String {
+    func randomString(length: Int) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+    var str = ""
+    for i in 0..<100_000 {
+        str += .init(Character.init(Unicode.Scalar.init(.init(i % Int(UInt8.max)))))
+        str += randomString(length: 10)
+    }
+    return str
 }
