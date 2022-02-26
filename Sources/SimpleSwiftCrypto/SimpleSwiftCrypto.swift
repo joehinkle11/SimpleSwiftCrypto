@@ -111,7 +111,10 @@ public struct AES256Key {
         self.aes256Key = aes256Key
     }
     ///
-    /// Takes the data and uses the private key to encrypt it.
+    /// Takes the data and uses the private key to encrypt it. Will call `CCCrypt` in CommonCrypto
+    /// and provide it `ivData` for the initialization vector. Will use cipher block chaining (CBC) as
+    /// the mode of operation.
+    ///
     /// Returns the encrypted data.
     ///
     public func encrypt(data: Data) -> Data? {
@@ -141,7 +144,10 @@ public struct AES256Key {
         }
     }
     ///
-    /// Takes the data and uses the private key to decrypt it.
+    /// Takes the data and uses the private key to decrypt it. Will call `CCCrypt` in CommonCrypto
+    /// and provide it `ivData` for the initialization vector. Will use cipher block chaining (CBC) as
+    /// the mode of operation.
+    ///
     /// Returns the decrypted data.
     ///
     public func decrypt(data: Data) -> Data? {
